@@ -50,7 +50,7 @@ public final class NGramCosineSimilarity {
         Map<String, Integer> suspiciousFrequencies = frequencies(
                 normalizedSuspicious, nGramSize);
 
-        double dotProduct = baselineDotProduct(
+        double dotProduct = dotProduct(
                 originalFrequencies, suspiciousFrequencies);
         double originalNorm = squaredNorm(originalFrequencies);
         double suspiciousNorm = squaredNorm(suspiciousFrequencies);
@@ -70,20 +70,15 @@ public final class NGramCosineSimilarity {
         return frequencies;
     }
 
-    /**
-     * Baseline implementation retained for the first profiling run. It will be
-     * replaced after the hotspot has been measured with JProfiler.
-     */
-    private double baselineDotProduct(Map<String, Integer> left,
-                                      Map<String, Integer> right) {
+    private double dotProduct(Map<String, Integer> left,
+                              Map<String, Integer> right) {
+        Map<String, Integer> smaller = left.size() <= right.size() ? left : right;
+        Map<String, Integer> larger = left.size() <= right.size() ? right : left;
         double product = 0.0;
-        for (Map.Entry<String, Integer> leftEntry : left.entrySet()) {
-            for (Map.Entry<String, Integer> rightEntry : right.entrySet()) {
-                if (leftEntry.getKey().equals(rightEntry.getKey())) {
-                    product += (double) leftEntry.getValue()
-                            * rightEntry.getValue();
-                    break;
-                }
+        for (Map.Entry<String, Integer> entry : smaller.entrySet()) {
+            Integer matchingFrequency = larger.get(entry.getKey());
+            if (matchingFrequency != null) {
+                product += (double) entry.getValue() * matchingFrequency;
             }
         }
         return product;
