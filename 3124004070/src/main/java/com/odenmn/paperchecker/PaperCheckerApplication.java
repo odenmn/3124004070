@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.Locale;
 
 /**
- * Coordinates argument validation, file access and similarity calculation.
+ * 负责协调参数校验、文件读写和相似度计算。
  */
 public final class PaperCheckerApplication {
 
@@ -20,7 +20,7 @@ public final class PaperCheckerApplication {
     private final NGramCosineSimilarity similarityCalculator;
 
     /**
-     * Creates an application with the production components.
+     * 使用正式的文件服务和相似度计算器创建应用程序。
      */
     public PaperCheckerApplication() {
         this(new Utf8FileService(), new NGramCosineSimilarity());
@@ -33,11 +33,11 @@ public final class PaperCheckerApplication {
     }
 
     /**
-     * Executes one plagiarism-checking request.
+     * 执行一次完整的论文查重任务。
      *
-     * @param args three absolute file paths
-     * @param errorStream destination for concise error messages
-     * @return process-compatible exit code
+     * @param args 三个文件的绝对路径
+     * @param errorStream 简洁错误信息的输出位置
+     * @return 可供操作系统识别的退出码
      */
     public int run(String[] args, PrintStream errorStream) {
         if (args == null || args.length != EXPECTED_ARGUMENT_COUNT) {
@@ -47,11 +47,13 @@ public final class PaperCheckerApplication {
         }
 
         try {
+            // 先校验全部路径，避免处理到一半时才发现参数无效。
             Path originalPath = toAbsolutePath(args[0], "original");
             Path suspiciousPath = toAbsolutePath(args[1], "suspicious");
             Path answerPath = toAbsolutePath(args[2], "answer");
             ensureDistinctAnswerPath(originalPath, suspiciousPath, answerPath);
 
+            // 文件访问严格限定在命令行提供的三个路径内。
             String originalText = fileService.read(originalPath);
             String suspiciousText = fileService.read(suspiciousPath);
             double similarity = similarityCalculator.calculate(
@@ -83,6 +85,7 @@ public final class PaperCheckerApplication {
     private void ensureDistinctAnswerPath(Path originalPath,
                                           Path suspiciousPath,
                                           Path answerPath) {
+        // 禁止答案文件覆盖任一输入文件，确保异常情况下原始数据也不会丢失。
         if (answerPath.equals(originalPath) || answerPath.equals(suspiciousPath)) {
             throw new IllegalArgumentException(
                     "answer path must differ from both input paths");

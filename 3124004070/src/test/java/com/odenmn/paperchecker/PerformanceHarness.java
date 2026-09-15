@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.Locale;
 
 /**
- * Repeats the real calculation long enough for a profiler to collect samples.
+ * 重复执行真实的相似度计算，为 JProfiler 提供足够的性能采样时间。
  */
 public final class PerformanceHarness {
 
@@ -15,14 +15,14 @@ public final class PerformanceHarness {
     private static final long ATTACH_DELAY_MILLIS = 5_000L;
 
     private PerformanceHarness() {
-        // Utility class.
+        // 工具类不需要创建实例。
     }
 
     /**
-     * Runs calculations for the requested number of seconds.
+     * 在指定秒数内持续运行相似度计算。
      *
-     * @param args original path, suspicious path and duration in seconds
-     * @throws Exception when a profiling input is invalid
+     * @param args 原文路径、抄袭版路径和运行秒数
+     * @throws Exception 性能分析输入无效或文件读取失败时抛出
      */
     public static void main(String[] args) throws Exception {
         if (args.length != ARGUMENT_COUNT) {
@@ -38,12 +38,14 @@ public final class PerformanceHarness {
         String suspicious = new String(Files.readAllBytes(suspiciousPath),
                 StandardCharsets.UTF_8);
 
+        // 预留五秒，方便在循环开始前连接 JProfiler。
         Thread.sleep(ATTACH_DELAY_MILLIS);
         NGramCosineSimilarity calculator = new NGramCosineSimilarity();
         long start = System.nanoTime();
         long deadline = start + durationNanos;
         long iterations = 0L;
         double checksum = 0.0;
+        // 按持续时间而非固定次数执行，使不同性能的机器都能获得稳定采样。
         do {
             checksum += calculator.calculate(original, suspicious);
             iterations++;

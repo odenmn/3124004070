@@ -1,18 +1,18 @@
 package com.odenmn.paperchecker;
 
 /**
- * Command-line entry point for the paper checker.
+ * 论文查重程序的命令行入口。
  */
 public final class Main {
 
     private Main() {
-        // Utility class.
+        // 工具类不需要创建实例。
     }
 
     /**
-     * Runs the application and reports failures through a non-zero exit code.
+     * 启动查重程序，并通过非零退出码向调用方报告错误。
      *
-     * @param args original file, suspicious file and answer file
+     * @param args 原文文件、抄袭版文件和答案文件的绝对路径
      */
     public static void main(String[] args) {
         int exitCode = new PaperCheckerApplication().run(args, System.err);

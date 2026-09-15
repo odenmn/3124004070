@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * 验证相似度算法的标准情况、边界情况及 Unicode 规范化行为。
+ */
 class NGramCosineSimilarityTest {
 
     private static final double TOLERANCE = 1.0e-9;

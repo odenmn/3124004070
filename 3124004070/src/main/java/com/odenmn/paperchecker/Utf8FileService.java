@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 /**
- * Reads and writes only the paths supplied by the command line.
+ * 仅负责读写命令行传入的文件路径，并统一使用 UTF-8 编码。
  */
 final class Utf8FileService {
 
@@ -20,6 +20,7 @@ final class Utf8FileService {
         }
         byte[] bytes = Files.readAllBytes(path);
         try {
+            // 遇到损坏的 UTF-8 字节时直接报错，避免替换字符悄悄改变查重结果。
             return StandardCharsets.UTF_8.newDecoder()
                     .onMalformedInput(CodingErrorAction.REPORT)
                     .onUnmappableCharacter(CodingErrorAction.REPORT)
@@ -32,6 +33,7 @@ final class Utf8FileService {
     }
 
     void write(Path path, String content) throws IOException {
+        // 若答案文件已存在则完整覆盖，保证其中只包含本次计算结果。
         Files.write(path, content.getBytes(StandardCharsets.UTF_8),
                 StandardOpenOption.CREATE,
                 StandardOpenOption.TRUNCATE_EXISTING,

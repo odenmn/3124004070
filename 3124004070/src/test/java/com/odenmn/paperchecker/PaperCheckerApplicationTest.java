@@ -12,6 +12,9 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+/**
+ * 验证命令行应用的文件输出、参数校验和异常处理。
+ */
 class PaperCheckerApplicationTest {
 
     @TempDir
@@ -145,6 +148,7 @@ class PaperCheckerApplicationTest {
     }
 
     private Path writeText(String name, String content) throws Exception {
+        // 每个测试使用独立临时目录，避免读写项目目录中的其他文件。
         Path path = temporaryDirectory.resolve(name);
         Files.write(path, content.getBytes(StandardCharsets.UTF_8));
         return path;
