@@ -4,4 +4,4 @@ target/
 *.log
 *.jfr
 *.hprof
-
+/main.jar
